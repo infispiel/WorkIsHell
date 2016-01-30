@@ -16,6 +16,7 @@ public class DialogueMaster : MonoBehaviour {
 
 	public void showText(string inp)
 	{
+		//todo: make this threadsafe so we can have conversations...
 		if (!showing) {
 			showing = true;
 			StartCoroutine (ShowText (inp));
