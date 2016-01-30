@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class pauseMenu : MonoBehaviour {
 
     public GameObject PauseUI;
-    public GameObject player;
+    public player player;
     public GameObject item1;
     public GameObject item2;
     public GameObject item3;
@@ -35,9 +35,20 @@ public class pauseMenu : MonoBehaviour {
             Time.timeScale = 1;
         }
 
-        if (player.Inventory.Contains(item1))
+        if (player.Inventory.Count > 0)
         {
-            item1.SetActive(true);
+            item1.GetComponent<SpriteRenderer>().sprite = player.Inventory[0].portrait;
+
+            if (player.Inventory.Count > 1)
+            {
+                item2.GetComponent<SpriteRenderer>().sprite = player.Inventory[1].portrait;
+                if (player.Inventory.Count >2)
+                {
+                    item3.GetComponent<SpriteRenderer>().sprite = player.Inventory[2].portrait;
+
+                }
+            }
+
         }
 
     }
