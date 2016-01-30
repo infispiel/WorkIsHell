@@ -44,7 +44,8 @@ public class player : MonoBehaviour {
 			print (TriggerList.Count);
 			foreach (Collider2D a in TriggerList)
 			{
-				print("a");
+				print ("a");
+				a.GetComponent<Interactable>().doInteract();
 			}
 		}
 
