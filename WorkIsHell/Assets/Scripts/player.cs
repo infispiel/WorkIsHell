@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class player : MonoBehaviour {
 	List<Collider2D> TriggerList = new List<Collider2D>();
-	List<Item> Inventory = new List<Item> ();
+	public List<Item> Inventory = new List<Item> ();
 
 	public float moveSpeed = 2;
 	// Use this for initialization
