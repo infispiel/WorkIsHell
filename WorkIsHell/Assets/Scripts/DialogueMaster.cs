@@ -25,9 +25,9 @@ public class DialogueMaster : MonoBehaviour {
 		else if (message_count > 0) {
 			showing = true;
 			show ();
-			start ++;
 			ShowText (messages [Mathf.FloorToInt((message_count+start)/MAX_MSG)]);
-			counter = SHOW_TIME;
+            start++;
+            counter = SHOW_TIME;
 			message_count --;
 		} else if (showing == true) {
 			showing = false;
