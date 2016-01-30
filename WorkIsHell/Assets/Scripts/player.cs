@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class player : MonoBehaviour {
 	List<Collider2D> TriggerList = new List<Collider2D>();
-	List<Item> Inventory = new List<Item> ();
+	public List<Item> Inventory = new List<Item> ();
 
 	public float moveSpeed = 2;
 	// Use this for initialization
@@ -41,19 +41,30 @@ public class player : MonoBehaviour {
 	void FixedUpdate ()
 	{
 		Object Res;
+        List<Moveable> toRemove = new List<Moveable>();
 		if (Input.GetKeyDown ("space")) {
-			print("space key was pressed");
-			print (TriggerList.Count);
 			foreach (Collider2D a in TriggerList)
 			{
-				print ("a");
-				Res = a.GetComponent<Interactable>().doInteract();
+				Res = a.GetComponent<Interactable>().doInteract(this.gameObject);
 				if(Res is Item)
 				{
 					Inventory.Add((Item)Res);
 					print (Inventory);
 				}
+                if(Res is Moveable)
+                {
+                    if (!this.GetComponent<BoxCollider2D>().bounds.Contains(((Moveable)Res).GetComponent<Transform>().position))
+                    {
+                        toRemove.Add((Moveable)Res);
+                    }
+                }
 			}
+
+            foreach(Moveable obj in toRemove)
+            {
+                TriggerList.Remove((obj).GetComponent<BoxCollider2D>());
+            }
+            toRemove.Clear();
 		}
 
 		// Cache the inputs.
@@ -73,5 +84,26 @@ public class player : MonoBehaviour {
 		}
 			// Otherwise set the speed parameter to 0.
 	}
+
+    public bool hasItem(int itemID)
+    {
+        foreach(Item i in Inventory)
+        {
+            if (i.id == itemID) return true;
+        }
+        return false;
+    }
+
+    public void removeItem(int itemID)
+    {
+        foreach(Item i in Inventory)
+        {
+            if(i.id == itemID)
+            {
+                Inventory.Remove(i);
+                break;
+            }
+        }
+    }
 
 }
