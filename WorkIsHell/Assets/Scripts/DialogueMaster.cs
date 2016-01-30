@@ -1,35 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class DialogueMaster : MonoBehaviour {
+	public const int MAX_MSG = 100;
+	public const int SHOW_TIME = 100;
+
 	bool showing = false;
+	DialogueMessage[] messages = new DialogueMessage[MAX_MSG];
+	int message_count = 0;
+	int start = 0;
+	int counter = SHOW_TIME;
 	// Use this for initialization
 	void Start () {
 	
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void FixedUpdate () {
+		if (counter > 0) {
+			counter --;
+		}
+		else if (message_count > 0) {
+			showing = true;
+			show ();
+			start ++;
+			ShowText (messages [Mathf.FloorToInt((message_count+start)/MAX_MSG)]);
+			counter = SHOW_TIME;
+			message_count --;
+		} else if (showing == true) {
+			showing = false;
+			hide ();
+		}
+
 	}
 
-	public void showText(string inp)
+	public void showText(string mesInp, Sprite picInp)
 	{
-		//todo: make this threadsafe so we can have conversations...
-		if (!showing) {
-			showing = true;
-			StartCoroutine (ShowText (inp));
+		if (message_count < MAX_MSG) {
+			message_count ++;
+			messages[message_count-1] = new DialogueMessage (mesInp, picInp);
 		}
 	}
 
-	private IEnumerator ShowText(string inp)
+	private void ShowText(DialogueMessage inp)
 	{
-		show ();
-		this.GetComponentInChildren<Text> ().text = inp;
-		yield return new WaitForSeconds (5);
-		hide ();
-		showing = false;
+		this.GetComponentInChildren<Text> ().text = inp.message;
+		((Image)this.GetComponent<Transform> ().FindChild ("Portrait").GetComponent<Image> ()).sprite = inp.picLoc;
 	}
 
 	private void hide()

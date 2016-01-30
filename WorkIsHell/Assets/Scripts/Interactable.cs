@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class Interactable : MonoBehaviour {
 	public string message = "";
+	public Sprite portrait;
 	public GameObject dialogue;
 	// Use this for initialization
 	void Start () {
@@ -15,8 +16,9 @@ public class Interactable : MonoBehaviour {
 	
 	}
 
-	public void doInteract()
+	public virtual Object doInteract()
 	{
-		dialogue.GetComponent<DialogueMaster> ().showText (message);
+		dialogue.GetComponent<DialogueMaster> ().showText (message, portrait);
+		return new Object();
 	}
 }

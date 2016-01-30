@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class player : MonoBehaviour {
 	List<Collider2D> TriggerList = new List<Collider2D>();
+	List<Item> Inventory = new List<Item> ();
 
 	public float moveSpeed = 2;
 	// Use this for initialization
@@ -39,13 +40,19 @@ public class player : MonoBehaviour {
 	
 	void FixedUpdate ()
 	{
+		Object Res;
 		if (Input.GetKeyDown ("space")) {
 			print("space key was pressed");
 			print (TriggerList.Count);
 			foreach (Collider2D a in TriggerList)
 			{
 				print ("a");
-				a.GetComponent<Interactable>().doInteract();
+				Res = a.GetComponent<Interactable>().doInteract();
+				if(Res is Item)
+				{
+					Inventory.Add((Item)Res);
+					print (Inventory);
+				}
 			}
 		}
 
@@ -54,6 +61,7 @@ public class player : MonoBehaviour {
 		float v = Input.GetAxis("Vertical");
 		
 		move(h, v);
+		TriggerList.RemoveAll(item => item == null);
 	}
 
 	void move (float horizontal, float vertical)
