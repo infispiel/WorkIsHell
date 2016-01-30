@@ -17,7 +17,6 @@ public class Interactable : MonoBehaviour {
 
 	public void doInteract()
 	{
-		dialogue.GetComponent<Transform> ().localScale = new Vector3 (1, 1, 1);
-		dialogue.GetComponentInChildren<Text> ().text = message;
+		dialogue.GetComponent<DialogueMaster> ().showText (message);
 	}
 }
