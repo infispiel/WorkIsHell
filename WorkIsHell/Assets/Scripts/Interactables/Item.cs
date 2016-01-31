@@ -17,7 +17,9 @@ public class Item : Interactable {
 	public override Object doInteract(GameObject sender)
 	{
 		dialogue.GetComponent<DialogueMaster> ().showText (message, portrait);
-		Destroy (this.gameObject);
+        this.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+		//Destroy (this.gameObject);
 		return this;
 	}
 }

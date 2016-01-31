@@ -22,10 +22,12 @@ public class pauseMenu : MonoBehaviour {
 
         if (Input.GetButtonDown("Pause"))
         {
+            this.GetComponent<AudioLowPassFilter>().enabled = false;
             paused = !paused;
         }
         if (paused)
         {
+            this.GetComponent<AudioLowPassFilter>().enabled = true;
             PauseUI.SetActive(true);
             Time.timeScale = 0;
         }
@@ -42,7 +44,7 @@ public class pauseMenu : MonoBehaviour {
             if (player.Inventory.Count > 1)
             {
                 item2.GetComponent<SpriteRenderer>().sprite = player.Inventory[1].portrait;
-                if (player.Inventory.Count >2)
+                if (player.Inventory.Count > 2)
                 {
                     item3.GetComponent<SpriteRenderer>().sprite = player.Inventory[2].portrait;
 
@@ -57,6 +59,7 @@ public class pauseMenu : MonoBehaviour {
 
     public void Resume()
     {
+        this.GetComponent<AudioLowPassFilter>().enabled = false;
         paused = false;
     }
 }

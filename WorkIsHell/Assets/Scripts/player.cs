@@ -5,8 +5,16 @@ using System.Collections.Generic;
 public class player : MonoBehaviour {
 	List<Collider2D> TriggerList = new List<Collider2D>();
 	public List<Item> Inventory = new List<Item> ();
+    public DialogueMaster dialogue;
+    public bool selectOne = true;
+    public bool isDialogueMode = false;
+    public AudioClip voice;
 
-	public float moveSpeed = 2;
+    GameObject cursor1;
+    GameObject cursor2;
+    public bool isConvoMode = false;
+
+    public float moveSpeed = 2;
 	// Use this for initialization
 	void Start () {
 	
@@ -14,9 +22,55 @@ public class player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
-	
+
+        Object Res;
+        List<Moveable> toRemove = new List<Moveable>();
+        if(isConvoMode || isDialogueMode)
+        {
+            this.GetComponent<Transform>().FindChild("Main Camera").GetComponent<AudioSource>().volume = 0.5f;
+        }
+        else
+        {
+            this.GetComponent<Transform>().FindChild("Main Camera").GetComponent<AudioSource>().volume = 1f;
+        }
+        if (!isConvoMode && !isDialogueMode)
+        {
+            if (Input.GetKeyUp("space"))
+            {
+                print("space pressed");
+                foreach (Collider2D a in TriggerList)
+                {
+                    Res = a.GetComponent<Interactable>().doInteract(this.gameObject);
+                    if (Res is Item && !Inventory.Contains((Item)Res))
+                    {
+                        Inventory.Add((Item)Res);
+                        print("Count: " + Inventory.Count);
+                    }
+                    if (Res is Moveable)
+                    {
+                        if (!this.GetComponent<BoxCollider2D>().bounds.Contains(((Moveable)Res).GetComponent<Transform>().position))
+                        {
+                            toRemove.Add((Moveable)Res);
+                        }
+                    }
+                    break;
+                }
+
+                foreach (Moveable obj in toRemove)
+                {
+                    TriggerList.Remove((obj).GetComponent<BoxCollider2D>());
+                }
+                toRemove.Clear();
+            }
+        }
+        }
+	public void setConvoMode(bool modeset, GameObject cursor1inp, GameObject cursor2inp)
+    {
+        isConvoMode = true;
+        cursor1 = cursor1inp;
+        cursor2 = cursor2inp;
+    }
+
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		//if the object is not already in the list
@@ -39,48 +93,73 @@ public class player : MonoBehaviour {
 	}
 	
 	void FixedUpdate ()
-	{
-		Object Res;
-        List<Moveable> toRemove = new List<Moveable>();
-		if (Input.GetKeyDown ("space")) {
-			foreach (Collider2D a in TriggerList)
-			{
-				Res = a.GetComponent<Interactable>().doInteract(this.gameObject);
-				if(Res is Item)
-				{
-					Inventory.Add((Item)Res);
-					print (Inventory);
-				}
-                if(Res is Moveable)
-                {
-                    if (!this.GetComponent<BoxCollider2D>().bounds.Contains(((Moveable)Res).GetComponent<Transform>().position))
-                    {
-                        toRemove.Add((Moveable)Res);
-                    }
-                }
-			}
+	{if (!isConvoMode && !isDialogueMode)
+        {
+            // Cache the inputs.
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
 
-            foreach(Moveable obj in toRemove)
+            move(h, v);
+            TriggerList.RemoveAll(item => item == null);
+
+        }
+        else if(isConvoMode)
+        {
+            if (Input.GetKeyDown("up") || Input.GetKeyDown("down"))
             {
-                TriggerList.Remove((obj).GetComponent<BoxCollider2D>());
+                selectOne = !selectOne;
+                cursor1.SetActive(selectOne);
+                cursor2.SetActive(!selectOne);
             }
-            toRemove.Clear();
-		}
-
-		// Cache the inputs.
-		float h = Input.GetAxis("Horizontal");
-		float v = Input.GetAxis("Vertical");
-		
-		move(h, v);
-		TriggerList.RemoveAll(item => item == null);
+            else if (Input.GetKeyUp("space"))
+            {
+                if(selectOne)
+                {
+                    dialogue.chooseOption(1);
+                }
+                else
+                {
+                    dialogue.chooseOption(2);
+                }
+                isConvoMode = false;
+            }
+        }
 	}
 
 	void move (float horizontal, float vertical)
 	{
 		// If there is some axis input...
-		if (horizontal != 0f || vertical != 0f) {
-			GetComponent<Rigidbody2D>().velocity = new Vector2(horizontal * moveSpeed, vertical * moveSpeed);
-		} else {
+		if (horizontal != 0f || vertical != 0f)
+        {
+            GetComponent<Animator>().speed = 1;
+            this.GetComponent<AudioSource>().enabled = true;
+            if(Mathf.Abs(horizontal) > Mathf.Abs(vertical))
+            {
+                if(horizontal > 0)
+                {
+                    GetComponent<Animator>().Play("player_walk",0);
+                }
+                else
+                {
+                    GetComponent<Animator>().Play("player_walkL", 0);
+                }
+            }
+            else
+            {
+                if(vertical > 0)
+                {
+                    GetComponent<Animator>().Play("player_walkN", 0);
+                }
+                else
+                {
+                    GetComponent<Animator>().Play("player_walkS", 0);
+                }
+            }
+            GetComponent<Rigidbody2D>().velocity = new Vector2(horizontal * moveSpeed, vertical * moveSpeed);
+		} else
+        {
+            GetComponent<Animator>().speed = 0;
+            this.GetComponent<AudioSource>().enabled = false;
 		}
 			// Otherwise set the speed parameter to 0.
 	}
